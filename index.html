@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>补课确认证明签署</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .screen {
+            display: none;
+            padding: 30px;
+            flex-direction: column;
+            min-height: 600px;
+        }
+        
+        .screen.active {
+            display: flex;
+        }
+        
+        /* 协议确认屏幕样式 */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eaeaea;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+        
+        .agreement-content {
+            flex: 1;
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            overflow-y: auto;
+            border: 1px solid #eaeaea;
+            max-height: 400px;
+        }
+        
+        .agreement-title {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 22px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #3498db;
+        }
+        
+        .agreement-text {
+            line-height: 1.8;
+            color: #34495e;
+        }
+        
+        .agreement-text p {
+            margin-bottom: 15px;
+        }
+        
+        .agreement-text .section-title {
+            color: #2c3e50;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
+            font-size: 18px;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+        }
+        
+        .agreement-text .info-item {
+            margin: 8px 0 8px 20px;
+            display: flex;
+        }
+        
+        .agreement-text .info-label {
+            min-width: 80px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .agreement-text .info-value {
+            color: #e74c3c;
+            font-weight: bold;
+            flex: 1;
+        }
+        
+        .agreement-text .notes {
+            background-color: #fff8e1;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #f39c12;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 25px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        #agreeCheckbox {
+            width: 22px;
+            height: 22px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+        
+        .checkbox-label {
+            font-size: 18px;
+            color: #2c3e50;
+            cursor: pointer;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 18px 30px;
+            font-size: 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn:hover {
+            background: linear-gradient(to right, #2980b9, #2573a7);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        /* 横屏签名屏幕样式 */
+        .signature-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        
+        .signature-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eaeaea;
+            flex-shrink: 0;
+        }
+        
+        .signature-header h2 {
+            color: #2c3e50;
+            font-size: 24px;
+        }
+        
+        .signature-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #2c3e50;
+            border-left: 4px solid #3498db;
+        }
+        
+        .signature-area-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 300px;
+            width: 100%;
+        }
+        
+        .signature-area {
+            flex: 1;
+            border: 2px dashed #bdc3c7;
+            border-radius: 12px;
+            background-color: #fefefe;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            touch-action: none;
+            width: 100%;
+            min-height: 250px;
+            max-height: 400px;
+        }
+        
+        #signatureCanvas {
+            width: 100% !important;
+            height: 100% !important;
+            cursor: crosshair;
+            display: block;
+            background: transparent;
+        }
+        
+        .signature-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #95a5a6;
+            font-size: 18px;
+            text-align: center;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .signature-controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-shrink: 0;
+        }
+        
+        .control-btn {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .control-btn i {
+            margin-right: 8px;
+        }
+        
+        #clearBtn {
+            background-color: #f8f9fa;
+            color: #e74c3c;
+            border: 2px solid #e74c3c;
+        }
+        
+        #clearBtn:hover {
+            background-color: #ffeaea;
+        }
+        
+        #undoBtn {
+            background-color: #f8f9fa;
+            color: #f39c12;
+            border: 2px solid #f39c12;
+        }
+        
+        #undoBtn:hover {
+            background-color: #fef5e7;
+        }
+        
+        .color-picker-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #colorPicker {
+            width: 50px;
+            height: 50px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: 0;
+            border-radius: 8px;
+            border: 2px solid #3498db;
+        }
+        
+        /* 结果屏幕样式 */
+        .result-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .result-icon {
+            font-size: 80px;
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+        
+        .result-title {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .result-text {
+            font-size: 18px;
+            color: #7f8c8d;
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .final-document-preview {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 10px;
+            border: 2px solid #bdc3c7;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            background: white;
+        }
+        
+        .result-buttons {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+        }
+        
+        #downloadBtn {
+            background: linear-gradient(to right, #27ae60, #219653);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        #downloadBtn:hover {
+            background: linear-gradient(to right, #219653, #1e8449);
+        }
+        
+        #newSignBtn {
+            background: linear-gradient(to right, #9b59b6, #8e44ad);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
+        }
+        
+        #newSignBtn:hover {
+            background: linear-gradient(to right, #8e44ad, #7d3c98);
+        }
+        
+        /* 隐藏的完整文档容器 - 用于生成最终图片 */
+        #finalDocumentContainer {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            width: 800px;
+            padding: 40px;
+            background: white;
+            font-family: 'SimSun', 'STSong', serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .final-document {
+            width: 100%;
+        }
+        
+        .final-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        
+        .final-content {
+            font-size: 16px;
+        }
+        
+        .final-section {
+            margin-bottom: 20px;
+        }
+        
+        .final-section-title {
+            font-weight: bold;
+            font-size: 18px;
+            margin: 15px 0 10px 0;
+            color: #2c3e50;
+        }
+        
+        .final-info-item {
+            margin: 8px 0;
+            display: flex;
+        }
+        
+        .final-info-label {
+            min-width: 100px;
+            font-weight: bold;
+        }
+        
+        .final-info-value {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .final-notes {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+        }
+        
+        .final-signature-area {
+            margin-top: 50px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .final-signature-label {
+            font-size: 16px;
+        }
+        
+        .final-signature-image {
+            width: 150px;
+            height: 80px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        
+        .final-date {
+            margin-top: 30px;
+            text-align: right;
+            font-size: 16px;
+        }
+        
+        /* 进度指示器 */
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            padding: 0 20px;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+        
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            right: -50%;
+            width: 100%;
+            height: 3px;
+            background-color: #e0e0e0;
+            z-index: 1;
+        }
+        
+        .step.active:not(:last-child)::after {
+            background-color: #3498db;
+        }
+        
+        .step-circle {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active .step-circle {
+            background-color: #3498db;
+        }
+        
+        .step.completed .step-circle {
+            background-color: #27ae60;
+        }
+        
+        .step-label {
+            font-size: 14px;
+            color: #95a5a6;
+            text-align: center;
+        }
+        
+        .step.active .step-label {
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .step.completed .step-label {
+            color: #27ae60;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                max-width: 95%;
+            }
+            
+            .final-document-preview {
+                max-height: 400px;
+            }
+            
+            #finalDocumentContainer {
+                width: 600px;
+                padding: 30px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #finalDocumentContainer {
+                width: 400px;
+                padding: 20px;
+                font-size: 14px;
+            }
+            
+            .final-title {
+                font-size: 22px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 进度步骤指示器 -->
+        <div class="progress-steps">
+            <div class="step active" id="step1">
+                <div class="step-circle">1</div>
+                <div class="step-label">查看证明</div>
+            </div>
+            <div class="step" id="step2">
+                <div class="step-circle">2</div>
+                <div class="step-label">确认签名</div>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-circle">3</div>
+                <div class="step-label">完成签署</div>
+            </div>
+        </div>
+        
+        <!-- 第1屏：补课证明确认 -->
+        <div id="agreementScreen" class="screen active">
+            <div class="header">
+                <h1><i class="fas fa-file-contract"></i> 补课确认证明</h1>
+                <div class="subtitle">请仔细阅读以下内容并确认签署</div>
+            </div>
+            
+            <div class="agreement-content">
+                <div class="agreement-title">补课安排确认证明</div>
+                <div class="agreement-text">
+                    <p>本证明旨在确认学生补课安排的相关事宜，确保教学计划的顺利实施。</p>
+                    
+                    <div class="section-title">一、学生信息</div>
+                    <div class="info-item">
+                        <div class="info-label">学生姓名：</div>
+                        <div class="info-value" id="studentName">张晓明</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">所在班级：</div>
+                        <div class="info-value" id="studentClass">高三(2)班</div>
+                    </div>
+                    
+                    <div class="section-title">二、补课安排</div>
+                    <div class="info-item">
+                        <div class="info-label">补课科目：</div>
+                        <div class="info-value" id="courseSubject">数学</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">补课时间：</div>
+                        <div class="info-value" id="courseTime">2023年10月15日 14:00-16:00</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">补课教师：</div>
+                        <div class="info-value" id="teacherName">王老师</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">补课地点：</div>
+                        <div class="info-value" id="courseLocation">校本部教学楼301室</div>
+                    </div>
+                    
+                    <div class="section-title">三、注意事项</div>
+                    <div class="notes">
+                        <p>1. 请学生提前10分钟到达指定教室，做好上课准备。</p>
+                        <p>2. 如需调整补课时间，请至少提前24小时与教务老师联系。</p>
+                        <p>3. 补课期间请遵守课堂纪律，认真听讲，完成教师布置的学习任务。</p>
+                        <p>4. 补课结束后，教师将向家长反馈学生学习情况。</p>
+                    </div>
+                    
+                    <div class="section-title">四、确认声明</div>
+                    <p>本人已阅读并理解上述补课安排的全部内容，确认同意按照上述安排参加补课，并承诺遵守相关课堂纪律和要求。</p>
+                </div>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="agreeCheckbox">
+                <label for="agreeCheckbox" class="checkbox-label">我已阅读并同意上述补课证明的全部内容</label>
+            </div>
+            
+            <button id="nextToSignBtn" class="btn" disabled>
+                <i class="fas fa-signature"></i> 确认并开始签名
+            </button>
+        </div>
+        
+        <!-- 第2屏：横屏签名界面 -->
+        <div id="signatureScreen" class="screen">
+            <div class="signature-container">
+                <div class="signature-header">
+                    <h2><i class="fas fa-pen-fancy"></i> 请在下方空白处签名</h2>
+                    <div class="color-picker-container">
+                        <label for="colorPicker">笔触颜色：</label>
+                        <input type="color" id="colorPicker" value="#000000">
+                    </div>
+                </div>
+                
+                <div class="signature-info">
+                    <strong>签署信息：</strong> 
+                    <span id="signStudentName">张晓明</span> | 
+                    <span id="signCourseSubject">数学</span> | 
+                    <span id="signCourseTime">2023年10月15日 14:00-16:00</span>
+                </div>
+                
+                <div class="signature-area-wrapper">
+                    <div class="signature-area">
+                        <canvas id="signatureCanvas"></canvas>
+                        <div class="signature-placeholder">
+                            <i class="fas fa-hand-point-up"></i><br>
+                            请在此处签名
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="signature-controls">
+                    <button id="undoBtn" class="control-btn">
+                        <i class="fas fa-undo"></i> 撤销一步
+                    </button>
+                    <button id="clearBtn" class="control-btn">
+                        <i class="fas fa-trash-alt"></i> 清除重签
+                    </button>
+                </div>
+                
+                <button id="confirmSignBtn" class="btn">
+                    <i class="fas fa-check-circle"></i> 确认签名
+                </button>
+            </div>
+        </div>
+        
+        <!-- 第3屏：结果展示 -->
+        <div id="resultScreen" class="screen">
+            <div class="result-content">
+                <div class="result-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2 class="result-title">签署完成！</h2>
+                <p class="result-text">
+                    您的补课确认证明已成功签署并保存。<br>
+                    下方是包含完整证明内容和签名的最终文档：
+                </p>
+                
+                <img id="finalDocumentImage" class="final-document-preview" alt="补课确认证明">
+                
+                <div class="result-info">
+                    <p><strong>签署人：</strong><span id="resultStudentName">张晓明</span></p>
+                    <p><strong>补课科目：</strong><span id="resultCourseSubject">数学</span></p>
+                    <p><strong>签署时间：</strong><span id="signTime"></span></p>
+                </div>
+                
+                <div class="result-buttons">
+                    <button id="downloadBtn" class="btn">
+                        <i class="fas fa-download"></i> 下载完整证明
+                    </button>
+                    <button id="newSignBtn" class="btn">
+                        <i class="fas fa-redo"></i> 重新签名
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 隐藏的完整文档容器 - 用于生成最终图片 -->
+    <div id="finalDocumentContainer">
+        <div class="final-document">
+            <div class="final-title">补课安排确认证明</div>
+            
+            <div class="final-content">
+                <p>本证明旨在确认学生补课安排的相关事宜，确保教学计划的顺利实施。</p>
+                
+                <div class="final-section">
+                    <div class="final-section-title">一、学生信息</div>
+                    <div class="final-info-item">
+                        <div class="final-info-label">学生姓名：</div>
+                        <div class="final-info-value" id="finalStudentName">张晓明</div>
+                    </div>
+                    <div class="final-info-item">
+                        <div class="final-info-label">所在班级：</div>
+                        <div class="final-info-value" id="finalStudentClass">高三(2)班</div>
+                    </div>
+                </div>
+                
+                <div class="final-section">
+                    <div class="final-section-title">二、补课安排</div>
+                    <div class="final-info-item">
+                        <div class="final-info-label">补课科目：</div>
+                        <div class="final-info-value" id="finalCourseSubject">数学</div>
+                    </div>
+                    <div class="final-info-item">
+                        <div class="final-info-label">补课时间：</div>
+                        <div class="final-info-value" id="finalCourseTime">2023年10月15日 14:00-16:00</div>
+                    </div>
+                    <div class="final-info-item">
+                        <div class="final-info-label">补课教师：</div>
+                        <div class="final-info-value" id="finalTeacherName">王老师</div>
+                    </div>
+                    <div class="final-info-item">
+                        <div class="final-info-label">补课地点：</div>
+                        <div class="final-info-value" id="finalCourseLocation">校本部教学楼301室</div>
+                    </div>
+                </div>
+                
+                <div class="final-section">
+                    <div class="final-section-title">三、注意事项</div>
+                    <div class="final-notes">
+                        <p>1. 请学生提前10分钟到达指定教室，做好上课准备。</p>
+                        <p>2. 如需调整补课时间，请至少提前24小时与教务老师联系。</p>
+                        <p>3. 补课期间请遵守课堂纪律，认真听讲，完成教师布置的学习任务。</p>
+                        <p>4. 补课结束后，教师将向家长反馈学生学习情况。</p>
+                    </div>
+                </div>
+                
+                <div class="final-section">
+                    <div class="final-section-title">四、确认声明</div>
+                    <p>本人已阅读并理解上述补课安排的全部内容，确认同意按照上述安排参加补课，并承诺遵守相关课堂纪律和要求。</p>
+                </div>
+                
+                <div class="final-signature-area">
+                    <div class="final-signature-label">家长签名：</div>
+                    <div class="final-signature-image" id="signatureImageContainer">
+                        <!-- 签名图片将在这里显示 -->
+                    </div>
+                </div>
+                
+                <div class="final-date">
+                    签署日期：<span id="finalSignDate"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let canvas, ctx;
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let currentColor = '#000000';
+        let signatureDataURL = '';
+        let strokeHistory = [];
+        let currentStroke = [];
+        let finalDocumentDataURL = '';
+        
+        // DOM元素
+        const agreementScreen = document.getElementById('agreementScreen');
+        const signatureScreen = document.getElementById('signatureScreen');
+        const resultScreen = document.getElementById('resultScreen');
+        const agreeCheckbox = document.getElementById('agreeCheckbox');
+        const nextToSignBtn = document.getElementById('nextToSignBtn');
+        const confirmSignBtn = document.getElementById('confirmSignBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const undoBtn = document.getElementById('undoBtn');
+        const colorPicker = document.getElementById('colorPicker');
+        const finalDocumentImage = document.getElementById('finalDocumentImage');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const newSignBtn = document.getElementById('newSignBtn');
+        
+        // 步骤指示器
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        
+        // 从URL参数获取数据并填充
+        function loadDataFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // 从URL参数获取数据，如果没有则使用默认值
+            const studentName = urlParams.get('student') || '张晓明';
+            const studentClass = urlParams.get('class') || '高三(2)班';
+            const courseSubject = urlParams.get('subject') || '数学';
+            const courseTime = urlParams.get('time') || '2023年10月15日 14:00-16:00';
+            const teacherName = urlParams.get('teacher') || '王老师';
+            const courseLocation = urlParams.get('location') || '校本部教学楼301室';
+            
+            // 更新页面显示（协议页）
+            document.getElementById('studentName').textContent = studentName;
+            document.getElementById('studentClass').textContent = studentClass;
+            document.getElementById('courseSubject').textContent = courseSubject;
+            document.getElementById('courseTime').textContent = courseTime;
+            document.getElementById('teacherName').textContent = teacherName;
+            document.getElementById('courseLocation').textContent = courseLocation;
+            
+            // 更新签名页显示
+            document.getElementById('signStudentName').textContent = studentName;
+            document.getElementById('signCourseSubject').textContent = courseSubject;
+            document.getElementById('signCourseTime').textContent = courseTime;
+            
+            // 更新结果页显示
+            document.getElementById('resultStudentName').textContent = studentName;
+            document.getElementById('resultCourseSubject').textContent = courseSubject;
+            
+            // 更新最终文档显示
+            document.getElementById('finalStudentName').textContent = studentName;
+            document.getElementById('finalStudentClass').textContent = studentClass;
+            document.getElementById('finalCourseSubject').textContent = courseSubject;
+            document.getElementById('finalCourseTime').textContent = courseTime;
+            document.getElementById('finalTeacherName').textContent = teacherName;
+            document.getElementById('finalCourseLocation').textContent = courseLocation;
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 从URL加载数据
+            loadDataFromURL();
+            
+            // 初始化画布
+            initCanvas();
+            
+            // 事件监听器
+            setupEventListeners();
+            
+            // 初始化撤销按钮状态
+            updateUndoButton();
+        });
+        
+        // 初始化画布
+        function initCanvas() {
+            canvas = document.getElementById('signatureCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // 设置画布尺寸
+            resizeCanvas();
+            
+            // 初始样式
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            // 监听窗口大小变化
+            window.addEventListener('resize', resizeCanvas);
+        }
+        
+        // 调整画布尺寸
+        function resizeCanvas() {
+            const signatureArea = document.querySelector('.signature-area');
+            const rect = signatureArea.getBoundingClientRect();
+            
+            // 设置画布显示尺寸
+            const displayWidth = Math.floor(rect.width);
+            const displayHeight = Math.floor(rect.height);
+            
+            // 设置画布实际渲染尺寸（针对高DPI屏幕）
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = displayWidth * dpr;
+            canvas.height = displayHeight * dpr;
+            
+            // 缩放上下文以匹配DPI
+            ctx.scale(dpr, dpr);
+            
+            // 重新设置样式（缩放会重置上下文）
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            // 设置CSS尺寸
+            canvas.style.width = displayWidth + 'px';
+            canvas.style.height = displayHeight + 'px';
+            
+            // 如果有签名数据，重新绘制
+            if (strokeHistory.length > 0) {
+                redrawSignature();
+            }
+        }
+        
+        // 获取画布坐标
+        function getCanvasCoordinates(event) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX, clientY;
+            
+            if (event.type.includes('touch')) {
+                clientX = event.touches[0].clientX;
+                clientY = event.touches[0].clientY;
+            } else {
+                clientX = event.clientX;
+                clientY = event.clientY;
+            }
+            
+            const x = (clientX - rect.left) * (canvas.width / (rect.width * window.devicePixelRatio));
+            const y = (clientY - rect.top) * (canvas.height / (rect.height * window.devicePixelRatio));
+            
+            return { x, y };
+        }
+        
+        // 生成包含签名和文字的最终文档图片
+        async function generateFinalDocument() {
+            const signatureDataURL = canvas.toDataURL('image/png');
+            const container = document.getElementById('finalDocumentContainer');
+            const signatureContainer = document.getElementById('signatureImageContainer');
+            
+            // 将签名图片放入最终文档
+            signatureContainer.innerHTML = '';
+            const signatureImg = document.createElement('img');
+            signatureImg.src = signatureDataURL;
+            signatureImg.style.width = '120px';
+            signatureImg.style.height = '50px';
+            signatureImg.style.objectFit = 'contain';
+            signatureContainer.appendChild(signatureImg);
+            
+            // 更新签署日期
+            const now = new Date();
+            const signDateStr = now.toLocaleDateString('zh-CN');
+            document.getElementById('finalSignDate').textContent = signDateStr;
+            
+            // 使用html2canvas生成完整文档图片
+            try {
+                // 加载html2canvas库
+                if (typeof html2canvas === 'undefined') {
+                    await loadHtml2Canvas();
+                }
+                
+                // 生成图片
+                const canvasElement = await html2canvas(container, {
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    useCORS: true,
+                    logging: false
+                });
+                
+                finalDocumentDataURL = canvasElement.toDataURL('image/png');
+                finalDocumentImage.src = finalDocumentDataURL;
+                
+                return finalDocumentDataURL;
+            } catch (error) {
+                console.error('生成文档图片失败:', error);
+                alert('生成完整文档失败，请重试');
+                return null;
+            }
+        }
+        
+        // 动态加载html2canvas库
+        function loadHtml2Canvas() {
+            return new Promise((resolve, reject) => {
+                if (typeof html2canvas !== 'undefined') {
+                    resolve();
+                    return;
+                }
+                
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 协议复选框变化
+            agreeCheckbox.addEventListener('change', function() {
+                nextToSignBtn.disabled = !this.checked;
+            });
+            
+            // 下一步按钮
+            nextToSignBtn.addEventListener('click', function() {
+                if (agreeCheckbox.checked) {
+                    agreementScreen.classList.remove('active');
+                    signatureScreen.classList.add('active');
+                    
+                    step1.classList.remove('active');
+                    step1.classList.add('completed');
+                    step2.classList.add('active');
+                    
+                    setTimeout(resizeCanvas, 100);
+                }
+            });
+            
+            // 颜色选择器
+            colorPicker.addEventListener('input', function() {
+                currentColor = this.value;
+                ctx.strokeStyle = currentColor;
+            });
+            
+            // 确认签名按钮
+            confirmSignBtn.addEventListener('click', async function() {
+                if (strokeHistory.length === 0) {
+                    alert('请先签名再确认！');
+                    return;
+                }
+                
+                // 显示加载中
+                confirmSignBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 生成文档中...';
+                confirmSignBtn.disabled = true;
+                
+                try {
+                    // 生成包含签名的完整文档图片
+                    const finalImage = await generateFinalDocument();
+                    
+                    if (finalImage) {
+                        // 切换到结果屏幕
+                        signatureScreen.classList.remove('active');
+                        resultScreen.classList.add('active');
+                        
+                        // 更新签署时间
+                        const now = new Date();
+                        const signTimeStr = now.toLocaleDateString('zh-CN') + ' ' + now.toLocaleTimeString('zh-CN', {hour12: false});
+                        document.getElementById('signTime').textContent = signTimeStr;
+                        
+                        // 更新步骤指示器
+                        step2.classList.remove('active');
+                        step2.classList.add('completed');
+                        step3.classList.add('active');
+                    }
+                } catch (error) {
+                    console.error('确认签名出错:', error);
+                } finally {
+                    // 恢复按钮状态
+                    confirmSignBtn.innerHTML = '<i class="fas fa-check-circle"></i> 确认签名';
+                    confirmSignBtn.disabled = false;
+                }
+            });
+            
+            // 清除按钮
+            clearBtn.addEventListener('click', clearSignature);
+            
+            // 撤销按钮
+            undoBtn.addEventListener('click', undoLastStroke);
+            
+            // 下载按钮
+            downloadBtn.addEventListener('click', downloadFinalDocument);
+            
+            // 重新签名按钮
+            newSignBtn.addEventListener('click', function() {
+                clearSignature();
+                resultScreen.classList.remove('active');
+                signatureScreen.classList.add('active');
+                
+                step3.classList.remove('active');
+                step2.classList.add('active');
+                step2.classList.remove('completed');
+                
+                setTimeout(resizeCanvas, 100);
+            });
+            
+            // 画布绘制事件
+            setupCanvasEvents();
+        }
+        
+        // 设置画布绘制事件
+        function setupCanvasEvents() {
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                if (e.touches.length === 1) {
+                    const coords = getCanvasCoordinates(e);
+                    startDrawing(coords.x, coords.y);
+                }
+            }, { passive: false });
+            
+            canvas.addEventListener('mousemove', function(e) {
+                const coords = getCanvasCoordinates(e);
+                draw(coords.x, coords.y);
+            });
+            
+            canvas.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+                if (e.touches.length === 1) {
+                    const coords = getCanvasCoordinates(e);
+                    draw(coords.x, coords.y);
+                }
+            }, { passive: false });
+            
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseleave', stopDrawing);
+            canvas.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                stopDrawing();
+            }, { passive: false });
+        }
+        
+        // 开始绘制
+        function startDrawing(x, y) {
+            isDrawing = true;
+            lastX = x;
+            lastY = y;
+            
+            currentStroke = [];
+            currentStroke.push({x, y, color: currentColor});
+            
+            document.querySelector('.signature-placeholder').style.display = 'none';
+        }
+        
+        // 绘制
+        function draw(x, y) {
+            if (!isDrawing) return;
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            
+            currentStroke.push({x, y, color: currentColor});
+            
+            lastX = x;
+            lastY = y;
+        }
+        
+        // 停止绘制
+        function stopDrawing() {
+            if (!isDrawing) return;
+            
+            isDrawing = false;
+            
+            if (currentStroke.length > 1) {
+                strokeHistory.push([...currentStroke]);
+            }
+            
+            updateUndoButton();
+        }
+        
+        // 清除签名
+        function clearSignature() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            strokeHistory = [];
+            currentStroke = [];
+            
+            document.querySelector('.signature-placeholder').style.display = 'block';
+            
+            updateUndoButton();
+        }
+        
+        // 撤销最后一步
+        function undoLastStroke() {
+            if (strokeHistory.length === 0) return;
+            
+            strokeHistory.pop();
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            redrawSignature();
+            
+            if (strokeHistory.length === 0) {
+                document.querySelector('.signature-placeholder').style.display = 'block';
+            }
+            
+            updateUndoButton();
+        }
+        
+        // 重绘签名
+        function redrawSignature() {
+            for (const stroke of strokeHistory) {
+                if (stroke.length < 2) continue;
+                
+                ctx.strokeStyle = stroke[0].color;
+                ctx.beginPath();
+                ctx.moveTo(stroke[0].x, stroke[0].y);
+                
+                for (let i = 1; i < stroke.length; i++) {
+                    ctx.lineTo(stroke[i].x, stroke[i].y);
+                }
+                
+                ctx.stroke();
+            }
+            
+            ctx.strokeStyle = currentColor;
+        }
+        
+        // 更新撤销按钮状态
+        function updateUndoButton() {
+            undoBtn.disabled = strokeHistory.length === 0;
+        }
+        
+        // 下载完整文档
+        function downloadFinalDocument() {
+            if (!finalDocumentDataURL) {
+                alert('请先生成完整文档');
+                return;
+            }
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const studentName = urlParams.get('student') || '学生';
+            
+            const link = document.createElement('a');
+            link.download = `补课确认证明-${studentName}-${new Date().toISOString().slice(0,10)}.png`;
+            link.href = finalDocumentDataURL;
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('完整证明文档下载成功！');
+        }
+    </script>
+</body>
+</html>
